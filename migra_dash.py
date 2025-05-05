@@ -26,23 +26,37 @@ if uploaded_file is not None:
             "YA NO SE UTILIZA": "plum",
         }
 
+        # Suponiendo que tienes un DataFrame llamado 'df' y un diccionario 'colores_estados_gx16' definidos previamente
+
         st.subheader("Gráfico de Barras Horizontal por ESTADO GX16 General")
         if 'ESTADO GX16' in df.columns:
             estado_counts = df['ESTADO GX16'].value_counts().sort_values()
             total_estado = estado_counts.sum()
+            porcentajes_mostrados = {}
             fig_estado = px.bar(estado_counts, x=estado_counts.values, y=estado_counts.index, orientation='h',
-                                 labels={'x': 'Cantidad', 'y': 'Estado GX16'},
-                                 title='Distribución por Estado GX16',
-                                 color=estado_counts.index,
-                                 color_discrete_map=colores_estados_gx16)
+                                labels={'x': 'Cantidad', 'y': 'Estado GX16'},
+                                title='Distribución por Estado GX16',
+                                color=estado_counts.index,
+                                color_discrete_map=colores_estados_gx16)
             for i, v in enumerate(estado_counts.values):
-                percent = f'{(v / total_estado) * 100:.1f}%'
-                fig_estado.add_annotation(x=v, y=estado_counts.index[i], text=percent,
-                                          xref="x", yref="y", showarrow=False, xanchor='left')
+                estado = estado_counts.index[i]
+                percent_individual = (v / total_estado) * 100
+                porcentaje_formateado = f'{percent_individual:.1f}'
+                porcentajes_mostrados[estado] = float(porcentaje_formateado)
+                fig_estado.add_annotation(x=v, y=estado, text=f'{porcentaje_formateado}%',
+                                            xref="x", yref="y", showarrow=False, xanchor='left')
             st.plotly_chart(fig_estado, use_container_width=True)
-        else:
-            st.warning("La columna 'ESTADO GX16' no se encontró para crear este gráfico.")
 
+            # Cálculo del porcentaje total de "YA NO SE UTILIZA" y "COMPILADO" sumando los valores formateados
+            avance_total_observacion = porcentajes_mostrados.get('YA NO SE UTILIZA', 0) + porcentajes_mostrados.get('COMPILADO', 0)
+
+            # Mostrar la información al pie del gráfico con el texto resaltado y centrado (alternativa)
+            st.markdown(f"<div style='text-align: center;'><span style='color:goldenrod;'>Avance Total (YA NO SE UTILIZA + COMPILADO):</span> {avance_total_observacion:.1f}%</div>", unsafe_allow_html=True)
+
+        else:
+            st.warning("La columna 'ESTADO GX16' no se encuentra en el DataFrame.")
+
+            
         st.subheader("Ranking por MÓDULO y ESTADO GX16")
         if 'MODULO' in df.columns and 'ESTADO GX16' in df.columns:
             modulo_estado_counts = df.groupby(['MODULO', 'ESTADO GX16']).size().unstack(fill_value=0).stack().reset_index(name='Cantidad')
@@ -50,7 +64,7 @@ if uploaded_file is not None:
                                        labels={'Cantidad': 'Cantidad', 'MODULO': 'Módulo', 'ESTADO GX16': 'Estado GX16'},
                                        title='Ranking por Módulo y Estado GX16',
                                        color_discrete_map=colores_estados_gx16)
-            st.plotly_chart(fig_modulo_estado, use_container_width=True, height=600)
+            st.plotly_chart(fig_modulo_estado, use_container_width=True, height=600)                    
         else:
             st.warning("Las columnas 'MODULO' o 'ESTADO GX16' no se encontraron para crear el ranking por módulo.")
 
