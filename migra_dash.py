@@ -64,6 +64,8 @@ if uploaded_file is not None:
         
         st.subheader("Ranking por MÓDULO y ESTADO GX16 (Ordenado por Cantidad Total)")
         if 'MODULO' in df.columns and 'ESTADO GX16' in df.columns:
+            df['MODULO'] = df['MODULO'].fillna("Sin Asignar")
+
             modulo_estado_counts = df.groupby(['MODULO', 'ESTADO GX16']).size().unstack(fill_value=0).stack().reset_index(name='Cantidad')
             
             # 1. Calcular la cantidad total por MÓDULO para determinar el orden
@@ -83,6 +85,8 @@ if uploaded_file is not None:
 
         st.subheader("Ranking por Responsable y ESTADO GX16 (Ordenado por Cantidad Total)")
         if 'Responsable' in df.columns and 'ESTADO GX16' in df.columns:
+            df['Responsable'] = df['Responsable'].fillna("Sin Asignar")
+            # Agrupar por 'Responsable' y 'ESTADO GX16' y contar las ocurrencias
             responsable_estado_counts = df.groupby(['Responsable', 'ESTADO GX16']).size().unstack(fill_value=0).stack().reset_index(name='Cantidad')
             
             # 1. Calcular la cantidad total por Responsable para determinar el orden
