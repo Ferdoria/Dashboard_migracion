@@ -51,8 +51,8 @@ if uploaded_file is not None:
                 porcentaje_formateado = f'{percent_individual:.1f}'
                 porcentajes_mostrados[estado] = float(porcentaje_formateado)
                 fig_estado.add_annotation(x=v, y=estado, text=f'{porcentaje_formateado}% ({v})', # Añadido cantidad absoluta
-                                          xref="x", yref="y", showarrow=False, xanchor='left', 
-                                          font=dict(color="black")) # Mejor visibilidad del texto
+                                          xref="x", yref="y", showarrow=False, xanchor='left')#, 
+                                          #font=dict(color="black")) # Mejor visibilidad del texto
             
             st.plotly_chart(fig_estado, use_container_width=True)
 
